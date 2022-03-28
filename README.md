@@ -2,29 +2,29 @@
 
 ![](./images/how-ecapture-works.png)
 
-eBPF HOOK uprobe实现的各种用户态进程的数据捕获，无需改动原程序。(Realize the data capture of various user-mode processes without changing the original program.)
-* SSL/HTTPS数据导出功能，针对HTTPS的数据包抓取，不需要导入CA证书。(The data export function is for HTTPS data packet fetching, and there is no need to import a CA certificate.)
-* bash的命令捕获(Command capture)，HIDS的bash命令监控解决方案。(HIDS's bash command monitoring solution.)
-* mysql query等数据库的数据库审计解决方案。(Database audit solutions for databases such as.)
+The data capture of various user-mode processes implemented by eBPF HOOK uprobe does not require changes to the original program.
+* SSL/HTTPS data export function, for HTTPS data packet fetching, no CA certificate is required.
+* bash command capture, HIDS bash command monitoring solution.
+* Database audit solutions for databases such as mysql query.
 
 # eCapture Architecure
 ![](./images/ecapture-architecture.png)
 
-# 演示 (demo)
+# demonstration
 
 ## eCapture User Manual
 [![eCapture User Manual](./images/ecapture-user-manual.png)](https://www.youtube.com/watch?v=CoDIjEQCvvA "eCapture User Manual")
 
-# 使用 (use)
-## 直接运行 (Run directly)
-下载 (download) [release](https://github.com/ehids/ecapture/releases) 的二进制包，可直接使用。(The binary package can be used directly.)
+# Use 
+## Run directly
+download [release](https://github.com/ehids/ecapture/releases) The binary package can be used directly.
 
-系统配置要求 (System configuration requirements)
-* 系统linux kernel版本必须高于4.18。(The system linux kernel version must be higher than 4.18.)
-* 开启BTF (Turn on BTF) [BPF Type Format (BTF)](https://www.kernel.org/doc/html/latest/bpf/btf.html) 支持。(Support.)
+System configuration requirements)
+* The system linux kernel version must be higher than 4.18.
+* Turn on BTF [BPF Type Format (BTF)](https://www.kernel.org/doc/html/latest/bpf/btf.html) Support.
 
 ### 
-验证方法(Verification method)：
+Verification method：
 ```shell
 cfc4n@vm-server:~$# uname -r
 4.18.0-305.3.1.el8.x86_64
@@ -32,35 +32,35 @@ cfc4n@vm-server:~$# cat /boot/config-`uname -r` | grep CONFIG_DEBUG_INFO_BTF
 CONFIG_DEBUG_INFO_BTF=y
 ```
 
-### openssl的无证书抓包 openssl (No certificate capture)
-执行任意https网络请求即可使用。(It can be used by performing any https network request.)
+### openssl's certificate-free capture package 
+It can be used by performing any https network request.
 ```shell
 curl https://www.qq.com
 ```
 
-## 注意 (note)
-已知centos 8.2的系统上，wget的网络行为无法获取，原因为wget没有使用openssl的so动态链接库`libssl.so`，而是`/lib64/libgnutls.so.30`，稍后支持。(It is known that on centos 8.2 systems, wget's network behavior cannot be obtained because wget does not use openssl's so dynamic link library`libssl.so `, but `/lib64/libgnutls.so.30`, which will be supported later.)
+## note
+It is known that on centos 8.2 systems, wget's network behavior cannot be obtained because wget does not use openssl's so dynamic link library`libssl.so `, but `/lib64/libgnutls.so.30`, which will be supported later.
 
-### bash的shell捕获 (bash shell capture)
+### bash shell capture
 ```shell
 ps -ef | grep foo
 ```
 
-# 微信公众号 (WeChat public account)
+# WeChat public account
 ![](./images/wechat_gzhh.png)
 
-## 自行编译 (Compile by yourself)
-自行编译对编译环境有要求，参考**原理**章节的介绍。
+## Compile by yourself
+Self-compilation has requirements for the compilation environment, please refer to the introduction in the chapter "Principles".
 
-# 原理 (principle)
+# principles
 
-## eBPF技术 (eBPF technology)
-参考[ebpf](https://ebpf.io)官网的介绍 (Refer to the introduction on the official website)
+## eBPF technology 
+[ebpf](https://ebpf.io) (Refer to the insructions on the official website)
 
 ## uprobe HOOK
 
-### https的ssl hook 
-本项目hook了`/lib/x86_64-linux-gnu/libssl.so.1.1`的`SSL_write`、`SSL_read`函数的返回值，拿到明文信息，通过ebpf map传递给用户进程。
+### ssl hook for https 
+This project hooks the return values of the'ssl_write` and'ssl_read` functions of`/lib/x86_64-linux-gnu/libssl.so.1.1`, gets the plain text information, and passes it to the user process through the ebpf map.
 ```go
 Probes: []*manager.Probe{
     {
@@ -94,39 +94,40 @@ Probes: []*manager.Probe{
     /**/
 },
 ```
-### bash的readline hook
-hook了`/bin/bash`的`readline`函数。
+### bash's readline hook
+the hook`/bin/bash`of the `readline` function
 
-# 编译方法
-针对个别程序使用的openssl类库是静态编译，也可以自行修改源码实现。若函数名不在符号表里，也可以自行反编译找到函数的offset偏移地址，填写到`UprobeOffset`属性上，进行编译。
-笔者环境`ubuntu 21.04`， linux kernel 5.10以上通用。
-**推荐使用`UBUNTU 21.04`版本的linux测试。**
+# Compilation method
+The openssl class library used for individual programs is statically compiled，You can also modify the source code to implement it yourself. If the function name is not in the symbol table，You can also decompile it yourself to find the offset address of the function，Fill in the `UprobeOffset` attribute and compile it.
+The author's environment is `ubuntu 21.04`, which is common for linux kernel 5.10 and above。
+**It is recommended to use the `UBUNTU 21.04` version of linux for testing. **
+
 # Compile method
 The openssl class library used for individual programs is statically compiled, and you can also modify the source code to implement it yourself. If the function name is not in the symbol table, you can also decompile it yourself to find the offset address of the function, fill in it on the "UprobeOffset" attribute, and compile it. The author's environment is 'ubuntu 21.04`, which is common for linux kernel 5.10 and above. **It is recommended to use the `UBUNTU 21.04' version of linux for testing. **
  
-## 工具链版本 Tool chain version
+## Requires
 * golang 1.16
 * gcc 10.3.0
 * clang 12.0.0  
 * cmake 3.18.4
 * clang backend: llvm 12.0.0   
 
-### 最低要求 (笔者未验证) Minimum requirements (the author has not verified)
-* gcc 5.1 以上 or above
+### Minimum requirements (not verified by author)
+* gcc 5.1 or above
 * clang 9
 * cmake 3.14
 
 
-## 编译 compile
+## compile
 ```shell
 git clone git@github.com:ehids/ecapture.git
 cd ecapture
 make
 bin/ecapture
 ```
-### 提醒 reminder
-首次编译时，需要先下载 `go get -d github.com/shuLhan/go-bindata/cmd/go-bindata`
-When compiling for the first time, you need to download it first
-# 参考资料 Reference materials
+### reminder
+When compiling for the first time, you need to download it first using : `go get -d github.com/shuLhan/go-bindata/cmd/go-bindata`
+
+# Reference materials
 [BPF Portability and CO-RE](https://facebookmicrosites.github.io/bpf/blog/2020/02/19/bpf-portability-and-co-re.html)
 [ebpfmanager v0.2.2](https://github.com/ehids/ebpfmanager)
