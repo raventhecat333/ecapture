@@ -60,7 +60,7 @@ Self-compilation has requirements for the compilation environment, please refer 
 ## uprobe HOOK
 
 ### ssl hook for https 
-This project hooks the return values of the'ssl_write` and'ssl_read` functions of`/lib/x86_64-linux-gnu/libssl.so.1.1`, gets the plain text information, and passes it to the user process through the ebpf map.
+This project hooks the return values of the`ssl_write` and `ssl_read` functions of`/lib/x86_64-linux-gnu/libssl.so.1.1`, gets the plain text information, and passes it to the user process through the ebpf map.
 ```go
 Probes: []*manager.Probe{
     {
@@ -95,7 +95,7 @@ Probes: []*manager.Probe{
 },
 ```
 ### bash's readline hook
-the hook`/bin/bash`of the `readline` function
+the hook`/bin/bash` of the `readline` function
 
 # Compilation method
 The openssl class library used for individual programs is statically compiled，You can also modify the source code to implement it yourself. If the function name is not in the symbol table，You can also decompile it yourself to find the offset address of the function，Fill in the `UprobeOffset` attribute and compile it.
@@ -103,7 +103,7 @@ The author's environment is `ubuntu 21.04`, which is common for linux kernel 5.1
 **It is recommended to use the `UBUNTU 21.04` version of linux for testing. **
 
 # Compile method
-The openssl class library used for individual programs is statically compiled, and you can also modify the source code to implement it yourself. If the function name is not in the symbol table, you can also decompile it yourself to find the offset address of the function, fill in it on the "UprobeOffset" attribute, and compile it. The author's environment is 'ubuntu 21.04`, which is common for linux kernel 5.10 and above. **It is recommended to use the `UBUNTU 21.04' version of linux for testing. **
+The openssl class library used for individual programs is statically compiled, and you can also modify the source code to implement it yourself. If the function name is not in the symbol table, you can also decompile it yourself to find the offset address of the function, fill in it on the "UprobeOffset" attribute, and compile it. The author's environment is `ubuntu 21.04`, which is common for linux kernel 5.10 and above. **It is recommended to use the `UBUNTU 21.04` version of linux for testing. **
  
 ## Requires
 * golang 1.16
